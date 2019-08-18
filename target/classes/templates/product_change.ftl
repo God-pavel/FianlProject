@@ -7,7 +7,6 @@
     <form action="/storage" method="post">
     <h3><@spring.message "page.product"/> ${product.name}</h3>
     <p>
-<#--TODO correct productType-->
     <@spring.message "merchandise.price"/> <input type="number" step="any" name="price" value="${product.price}">
     </p>
     <p>

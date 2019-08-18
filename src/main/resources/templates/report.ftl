@@ -6,7 +6,7 @@
     <div class="container mt-4">
     <h3><@spring.message "page.report"/></h3>
     <#if message != "">
-        <div>${message}</div>
+        <div class="alert alert-danger" role="alert">${message}</div>
     </#if>
 
     <div class="container">

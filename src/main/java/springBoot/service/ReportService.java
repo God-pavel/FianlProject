@@ -12,6 +12,7 @@ import springBoot.repository.ReportRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -68,7 +69,7 @@ public class ReportService {
         log.info("total:  " + totalSum);
 
         Report report = Report.builder()
-                .checks(todayChecks)
+                .checks(new HashSet<>())
                 .reportType(ReportType.XReport)
                 .user(user)
                 .total(totalSum)
@@ -84,12 +85,12 @@ public class ReportService {
         if (getTodayZReport()) {
             throw new ZReportAlreadyCreatedException("ZReport was already created today!");
         }
-
+        checkService.deleteUncompletedChecks();
         Set<Check> todayChecks = getTodayChecks();
         BigDecimal totalSum = calcTotalSum(todayChecks);
 
         Report report = Report.builder()
-                .checks(todayChecks)
+                .checks(new HashSet<>())
                 .reportType(ReportType.ZReport)
                 .user(user)
                 .total(totalSum)
@@ -97,7 +98,7 @@ public class ReportService {
                 .build();
         finishReport(report, todayChecks);
 
-        log.info("Zreport was saved. Report id: " + report.getId());
+        log.info("Z-report was saved. Report id: " + report.getId());
     }
 
     private void finishReport(Report report, Set<Check> checks) {

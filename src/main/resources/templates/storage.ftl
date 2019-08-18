@@ -15,6 +15,11 @@
     <th><@spring.message "storage.product"/></th>
     <th><@spring.message "storage.amount"/></th>
     <th><@spring.message "storage.price"/></th>
+    <th><@spring.message "storage.type"/></th>
+    <#if isMerchandiser>
+        <th><@spring.message "users.edit"/></th>
+    </#if>
+
 </tr>
     </thead>
     <tbody>
@@ -24,6 +29,7 @@
         <td>${product.name}</td>
         <td>${product.amount}</td>
         <td>${product.price}</td>
+        <td>${product.productType}</td>
         <#if isMerchandiser>
             <td><a href="/storage/${product.id}"><@spring.message "users.edit"/></a> </td>
         </#if>

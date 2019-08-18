@@ -14,6 +14,8 @@ import springBoot.entity.TemporaryCheck;
 import springBoot.entity.User;
 import springBoot.exception.NotEnoughProductsException;
 import springBoot.service.CheckService;
+import springBoot.validator.AmountValidator;
+import springBoot.validator.Result;
 
 @Log4j2
 @Controller
@@ -38,7 +40,7 @@ public class CheckFormController {
 
 
     @GetMapping("/createCheck/{checkId}")
-    public String userEditPage(@PathVariable Long checkId,
+    public String createCheckPage(@PathVariable Long checkId,
                                @ModelAttribute("message") String message, Model model) {
         TemporaryCheck check = checkService.getTemporaryCheckById(checkId);
         model.addAttribute("check", check);
@@ -51,6 +53,14 @@ public class CheckFormController {
     public String addByName(@PathVariable Long checkId, String name,
                             RedirectAttributes ra,
                             Long amount) {
+        Result checkAmount = new AmountValidator().validate(amount);
+
+        if (!checkAmount.isValid()) {
+            ra.addFlashAttribute("message", checkAmount.getMessage());
+            log.warn(checkAmount.getMessage());
+            return "redirect:/createCheck/" + checkId;
+        }
+
         try {
             checkService.addProductToCheckByName(checkId, name, amount);
         } catch (NotEnoughProductsException | IllegalArgumentException e) {
@@ -65,6 +75,13 @@ public class CheckFormController {
     public String addById(@PathVariable Long checkId, Long id,
                           RedirectAttributes ra,
                           Long amount) {
+        Result checkAmount = new AmountValidator().validate(amount);
+
+        if (!checkAmount.isValid()) {
+            ra.addFlashAttribute("message", checkAmount.getMessage());
+            log.warn(checkAmount.getMessage());
+            return "redirect:/createCheck/" + checkId;
+        }
         try {
             checkService.addProductToCheckById(checkId, id, amount);
         } catch (NotEnoughProductsException | IllegalArgumentException e) {

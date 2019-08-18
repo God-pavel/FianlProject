@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import springBoot.entity.User;
 import springBoot.entity.enums.Role;
 import springBoot.service.UserService;
+import springBoot.validator.Result;
+import springBoot.validator.UsernameValidator;
 
 import java.util.Map;
 
@@ -40,8 +42,19 @@ public class UserController {
     public String userEdit(
             @RequestParam("userId") User user,
             @RequestParam Map<String, String> form,
-            @RequestParam String username
+            @RequestParam String username,
+            Model model
     ) {
+
+        Result checkUsername = new UsernameValidator().validate(username);
+
+
+        if (!checkUsername.isValid()) {
+            model.addAttribute("user", user);
+            model.addAttribute("roles", Role.values());
+            return "user_edit";
+        }
+
         userService.userEdit(user, form, username);
 
         return "redirect:/user";

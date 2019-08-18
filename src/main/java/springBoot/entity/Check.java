@@ -22,7 +22,7 @@ import java.util.Map;
 //TODO improve i18n
 public class Check {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
 

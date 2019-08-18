@@ -30,7 +30,7 @@ public class Report {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "checks_in_reports",
             joinColumns = @JoinColumn(name = "reports_id"),

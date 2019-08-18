@@ -53,9 +53,6 @@ public class UserService implements UserDetailsService {
         }
         User user = User
                 .builder()
-                .firstName(userdto.getFirstName())
-                .lastName(userdto.getLastName())
-                .email(userdto.getEmail())
                 .username(userdto.getUsername())
                 .password(passwordEncoder.encode(userdto.getPassword()))
                 .active(true)
@@ -90,9 +87,6 @@ public class UserService implements UserDetailsService {
     public void add() {
         if (userRepository.findByUsername("admin") == null) {
             User user = User.builder()
-                    .firstName("admin")
-                    .lastName("admin")
-                    .email("admin")
                     .username("admin")
                     .password(passwordEncoder.encode("test"))
                     .build();

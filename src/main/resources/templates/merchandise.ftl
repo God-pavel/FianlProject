@@ -33,10 +33,10 @@
     <input type="number" name="amount" class="form-control" required/>
 </div>
     </div>
-<#--TODO Make correct checkbox-->
+
     <#list types as type>
         <div>
-        <label><input type="checkbox" name="${type}">${type}</label>
+        <label><input type="radio" name="productType" required value=${type}>${type}</label>
         </div>
     </#list>
 <input type="hidden" name="_csrf" value="${_csrf.token}"/>

@@ -2,6 +2,7 @@
 <#import "/spring.ftl" as spring/>
 
 
+
 <@c.page>
     <div class="row justify-content-center">
     <div class="col-md-12">
@@ -10,21 +11,16 @@
     <thead>
 <tr>
     <th><@spring.message "users.id"/></th>
-    <th><@spring.message "users.firstName"/></th>
-    <th><@spring.message "users.lastName"/></th>
-    <th><@spring.message "users.email"/></th>
     <th><@spring.message "users.username"/></th>
     <th><@spring.message "users.password"/></th>
     <th><@spring.message "users.role"/></th>
+    <th><@spring.message "users.edit"/></th>
 </tr>
     </thead>
     <tbody>
     <#list users as user>
         <tr>
         <td>${user.id}</td>
-        <td>${user.firstName}</td>
-        <td>${user.lastName}</td>
-        <td>${user.email}</td>
         <td>${user.username}</td>
         <td>${user.password}</td>
         <td><#list user.roles as role>${role}<#sep>, </#list></td>

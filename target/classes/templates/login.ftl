@@ -17,7 +17,7 @@
     <div class="form-group row">
     <label class="col-sm-2 col-form-label"> <@spring.message "registration.password"/></label>
 <div class="col-sm-6">
-    <input type="text" class="form-control" name="password" required/>
+    <input type="password" class="form-control" name="password" required/>
 </div>
     </div>
 

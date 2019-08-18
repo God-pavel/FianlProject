@@ -60,7 +60,7 @@ public class ProductService {
                     .price(new BigDecimal(productdto.getPrice())
                             .setScale(2, RoundingMode.HALF_UP))
                     //TODO improve types
-                    .productType(ProductType.QUANTITY)
+                    .productType(productdto.getProductType())
                     .amount(productdto.getAmount())
                     .build();
             productRepository.save(product);

@@ -1,6 +1,10 @@
 package springBoot.controller;
 
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +31,12 @@ public class MainController {
     }
 
     @GetMapping
-    public String checkPage(@ModelAttribute("message") String message, Model model) {
-        Iterable<Check> checks = checkService.getAllChecks();
-        model.addAttribute("checks", checks);
+    public String checkPage(@ModelAttribute("message") String message,
+                            Model model,
+                            @PageableDefault(sort = {"id"},direction = Sort.Direction.DESC)Pageable pageable) {
+        Page<Check> page = checkService.getAllChecks(pageable);
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/main");
         model.addAttribute("message", message);
         return "main";
     }

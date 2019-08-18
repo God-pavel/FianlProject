@@ -1,6 +1,8 @@
 package springBoot.service;
 
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import springBoot.entity.Check;
 import springBoot.entity.Product;
@@ -37,6 +39,11 @@ public class CheckService {
 
     }
 
+    public Page<Check> getAllChecks(Pageable pageable) {
+
+        return checkRepository.findAll(pageable);
+    }
+
     public List<Check> getAllChecks() {
 
         return checkRepository.findAll();
@@ -54,13 +61,13 @@ public class CheckService {
                 new IllegalArgumentException("There are no check with such id: " + id));
     }
 
-    private void deleteUncompletedChecks() {
+    void deleteUncompletedChecks() {
         temporaryCheckRepository.findAll()
                 .forEach(temporaryCheckRepository::delete);
     }
 
     public TemporaryCheck createCheck(User user) {
-        deleteUncompletedChecks();
+
         String username = user.getUsername();
         TemporaryCheck check = TemporaryCheck
                 .builder()
@@ -127,16 +134,13 @@ public class CheckService {
         return sums.stream()
                 .reduce(0.0, (x, y) -> x + y);
     }
-
-    public void closeCheck(Long checkId) {
-        log.info("start closing");
+    public void closeCheck(Long checkId) throws NotEnoughProductsException{
+        log.info("at close check method");
         TemporaryCheck temporaryCheck = getTemporaryCheckById(checkId);
         log.info("temp check: " + temporaryCheck);
         Map<Product, Long> products = getTemporaryCheckById(temporaryCheck.getId()).getProductAmount();
-        log.info("products: " + products);
         temporaryCheckRepository.delete(temporaryCheck);
         products.forEach(productService::takeAway);
-
         Check check = Check.builder()
                 .user(userService.findUserByUsername(temporaryCheck.getUserName()))
                 .productAmount(products)
@@ -144,6 +148,10 @@ public class CheckService {
                 .total(temporaryCheck.getTotal())
                 .toDelete(true)
                 .build();
+        log.info("check to save: " + check);
+        if (check.getTotal().compareTo(new BigDecimal(0)) == 0) {
+            return;
+        }
         checkRepository.save(check);
         log.info("Check was saved. Check id: " + check.getId());
 
@@ -159,28 +167,30 @@ public class CheckService {
         if (!getCheckById(id).isToDelete()) {
             throw new CheckCantBeDeleted("This check already in report so it cant be deleted!");
         } else {
-            log.info("product to delete: " + getCheckById(id).getProductAmount());
+            log.info("products to delete: " + getCheckById(id).getProductAmount());
             getCheckById(id).getProductAmount().forEach(productService::takeBack);
             checkRepository.delete(getCheckById(id));
             log.info("Check was deleted.");
         }
     }
 
-    public void deleteProductFromCheck(Long checkId, String name) {
+
+    public void deleteProductFromCheck(Long checkId, String name) throws CheckCantBeDeleted {
         Check check = getCheckById(checkId);
-
-        Product productToDelete = productService.getProductByName(name);
-        log.info("product to delete: " + productToDelete);
-        Long amountToDelete = check.getProductAmount().get(productToDelete);
-        log.info("amount to delete: " + amountToDelete);
-
-        check.getProductAmount().remove(productToDelete);
-        if (check.getProductAmount().isEmpty()) {
-            deleteCheck(checkId);
+        if (!check.isToDelete()) {
+            throw new CheckCantBeDeleted("This check already in report so product cant be deleted!");
         } else {
-            check.setTotal(new BigDecimal(calcTotal(check.getProductAmount())));
-            checkRepository.save(check);
-            productService.takeBack(productToDelete, amountToDelete);
+            Product productToDelete = productService.getProductByName(name);
+            Long amountToDelete = check.getProductAmount().get(productToDelete);
+            check.getProductAmount().remove(productToDelete);
+            if (check.getProductAmount().isEmpty()) {
+                productService.takeBack(productToDelete,amountToDelete);
+                deleteCheck(checkId);
+            } else {
+                check.setTotal(new BigDecimal(calcTotal(check.getProductAmount())));
+                checkRepository.save(check);
+                productService.takeBack(productToDelete, amountToDelete);
+            }
         }
 
     }
