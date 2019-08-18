@@ -49,7 +49,7 @@ public class StorageController {
         Result checkAmount = new AmountValidator().validate(amount);
 
         if (!checkAmount.isValid()) {
-                model.addAttribute("product", product);
+            model.addAttribute("product", product);
             return "product_change";
         }
 

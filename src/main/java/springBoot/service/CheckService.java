@@ -134,7 +134,8 @@ public class CheckService {
         return sums.stream()
                 .reduce(0.0, (x, y) -> x + y);
     }
-    public void closeCheck(Long checkId) throws NotEnoughProductsException{
+
+    public void closeCheck(Long checkId) throws NotEnoughProductsException {
         log.info("at close check method");
         TemporaryCheck temporaryCheck = getTemporaryCheckById(checkId);
         log.info("temp check: " + temporaryCheck);
@@ -184,7 +185,7 @@ public class CheckService {
             Long amountToDelete = check.getProductAmount().get(productToDelete);
             check.getProductAmount().remove(productToDelete);
             if (check.getProductAmount().isEmpty()) {
-                productService.takeBack(productToDelete,amountToDelete);
+                productService.takeBack(productToDelete, amountToDelete);
                 deleteCheck(checkId);
             } else {
                 check.setTotal(new BigDecimal(calcTotal(check.getProductAmount())));

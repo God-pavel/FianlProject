@@ -12,7 +12,6 @@
 <tr>
     <th><@spring.message "users.id"/></th>
     <th><@spring.message "users.username"/></th>
-    <th><@spring.message "users.password"/></th>
     <th><@spring.message "users.role"/></th>
     <th><@spring.message "users.edit"/></th>
 </tr>
@@ -22,7 +21,6 @@
         <tr>
         <td>${user.id}</td>
         <td>${user.username}</td>
-        <td>${user.password}</td>
         <td><#list user.roles as role>${role}<#sep>, </#list></td>
         <td><a href="/user/${user.id}"><@spring.message "users.edit"/></a> </td>
         </tr>

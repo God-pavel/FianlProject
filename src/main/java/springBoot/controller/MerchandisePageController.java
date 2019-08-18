@@ -48,7 +48,6 @@ public class MerchandisePageController {
         }
 
 
-
         if (!productService.addProduct(productdto)) {
             model.put("types", ProductType.values());
             model.put("message", messageSource.getMessage("message.exist.product", null, LocaleContextHolder.getLocale()));

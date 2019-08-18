@@ -17,26 +17,60 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Service class realizing reports logic
+ *
+ * @author Pavlo Pankratov
+ * @version 1.0
+ */
 @Log4j2
 @Service
 public class ReportService {
 
+    /**
+     * Report repository field
+     */
     private final ReportRepository reportRepository;
+    /**
+     * Check service field
+     */
     private final CheckService checkService;
 
+    /**
+     * Constructor - creating new object
+     *
+     * @param checkService     - check serviced
+     * @param reportRepository - report repository
+     */
     public ReportService(ReportRepository reportRepository, CheckService checkService) {
         this.reportRepository = reportRepository;
         this.checkService = checkService;
     }
 
+    /**
+     * Method to get all reports
+     *
+     * @return returns list of reports
+     */
     public List<Report> getAllReports() {
         return reportRepository.findAll();
     }
 
+    /**
+     * Method to get check total value
+     *
+     * @param check certain date
+     * @return returns double total
+     */
     private Double getCheckTotal(Check check) {
         return check.getTotal().doubleValue();
     }
 
+    /**
+     * Method to get all today checks
+     *
+     * @return returns set of checks
+     */
     private Set<Check> getTodayChecks() {
         return checkService.getAllChecks().stream()
                 .filter(check -> check.getTime().
@@ -44,6 +78,12 @@ public class ReportService {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Method to calculate report total value
+     *
+     * @param checks set of report checks
+     * @return returns BigDecimal total
+     */
     private BigDecimal calcTotalSum(Set<Check> checks) {
         List<Double> totals = checks.stream()
                 .map(this::getCheckTotal)
@@ -53,6 +93,11 @@ public class ReportService {
                 .setScale(2, RoundingMode.HALF_UP);
     }
 
+    /**
+     * Method to check if today was already created z-report
+     *
+     * @return returns boolean value
+     */
     public boolean getTodayZReport() {
         Set<Report> todayReports = reportRepository.findByDate(LocalDate.now());
         Set<Report> todayZReports = todayReports.stream()
@@ -61,12 +106,14 @@ public class ReportService {
         return !todayZReports.isEmpty();
     }
 
+    /**
+     * Method to create x-report
+     *
+     * @param user user that create report
+     */
     public void createXReport(User user) {
-        log.info("start create method");
         Set<Check> todayChecks = getTodayChecks();
-        log.info("today checks: " + todayChecks);
         BigDecimal totalSum = calcTotalSum(todayChecks);
-        log.info("total:  " + totalSum);
 
         Report report = Report.builder()
                 .checks(new HashSet<>())
@@ -75,12 +122,15 @@ public class ReportService {
                 .total(totalSum)
                 .date(LocalDate.now())
                 .build();
-        log.info("new report:  " + report);
         finishReport(report, todayChecks);
-        log.info("Xreport was saved. Report id: " + report.getId());
-
+        log.info("X-report was saved. Report id: " + report.getId());
     }
 
+    /**
+     * Method to create z-report
+     *
+     * @param user user that create report
+     */
     public void createZReport(User user) {
         if (getTodayZReport()) {
             throw new ZReportAlreadyCreatedException("ZReport was already created today!");
@@ -101,16 +151,19 @@ public class ReportService {
         log.info("Z-report was saved. Report id: " + report.getId());
     }
 
+
+    /**
+     * Method to calculate report total value
+     *
+     * @param report report needs to be finished
+     * @param checks report checks
+     */
     private void finishReport(Report report, Set<Check> checks) {
-        log.info("in finish method");
         checks.forEach(check -> {
-            log.info("check: " + check);
             check.setToDelete(false);
-            log.info("check: " + check);
             checkService.saveCheck(check);
             report.getChecks().add(check);
         });
-        log.info("report: " + report);
         reportRepository.save(report);
     }
 

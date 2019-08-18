@@ -1,7 +1,6 @@
 package springBoot.controller;
 
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,11 +21,10 @@ import springBoot.validator.Result;
 public class CheckFormController {
 
     private final CheckService checkService;
-    private final MessageSource messageSource;
 
-    public CheckFormController(CheckService checkService, MessageSource messageSource) {
+    public CheckFormController(CheckService checkService) {
         this.checkService = checkService;
-        this.messageSource = messageSource;
+
     }
 
     @GetMapping("/createCheck")
@@ -41,7 +39,7 @@ public class CheckFormController {
 
     @GetMapping("/createCheck/{checkId}")
     public String createCheckPage(@PathVariable Long checkId,
-                               @ModelAttribute("message") String message, Model model) {
+                                  @ModelAttribute("message") String message, Model model) {
         TemporaryCheck check = checkService.getTemporaryCheckById(checkId);
         model.addAttribute("check", check);
         model.addAttribute("message", message);

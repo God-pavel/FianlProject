@@ -3,5 +3,5 @@
 
 
 <@c.page>
-    <h3><@spring.message "page.face"/></h3>
+    <h3 align="center"><@spring.message "page.face"/></h3>
 </@c.page>

@@ -47,7 +47,7 @@
             <form action="/logout" method="post">
                 <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                 <#if name != "unknown">
-                    <button class="btn btn-primary" type="submit">Log out</button>
+                    <button class="btn btn-primary" type="submit"><@spring.message "logout"/></button>
                 </#if>
             </form>
         </div>

@@ -33,38 +33,42 @@ public class MainController {
     @GetMapping
     public String checkPage(@ModelAttribute("message") String message,
                             Model model,
-                            @PageableDefault(sort = {"id"},direction = Sort.Direction.DESC)Pageable pageable) {
+                            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<Check> page = checkService.getAllChecks(pageable);
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         model.addAttribute("message", message);
         return "main";
     }
+
     @PostMapping("/createCheck")
     public String createCheck(RedirectAttributes ra) {
-        if (reportService.getTodayZReport()){
+        if (reportService.getTodayZReport()) {
             ra.addFlashAttribute("message", "You can't create new check because today shift was closed");
             return "redirect:/main";
         }
         return "redirect:/createCheck";
     }
+
     @PostMapping("/deleteCheck")
     public String deleteCheck(Long checkId, RedirectAttributes ra) {
         try {
             checkService.deleteCheck(checkId);
-        }catch (CheckCantBeDeleted e){
+        } catch (CheckCantBeDeleted e) {
             log.warn(e.getMessage());
             ra.addFlashAttribute("message", e.getMessage());
         }
         return "redirect:/main";
     }
+
     @PostMapping("/deleteProduct")
-    public String deleteProduct(Long checkId, String productName,RedirectAttributes ra) {
+    public String deleteProduct(Long checkId, String productName, RedirectAttributes ra) {
         try {
             checkService.deleteProductFromCheck(checkId, productName);
-        }catch (CheckCantBeDeleted e){
+        } catch (CheckCantBeDeleted e) {
             log.warn(e.getMessage());
             ra.addFlashAttribute("message", e.getMessage());
-        }        return "redirect:/main";
+        }
+        return "redirect:/main";
     }
 }

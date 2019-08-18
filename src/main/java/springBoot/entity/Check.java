@@ -16,10 +16,6 @@ import java.util.Map;
 @Entity
 @Table(name = "checks")
 
-//TODO pagination
-//TODO transaction
-//TODO junit
-//TODO improve i18n
 public class Check {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
