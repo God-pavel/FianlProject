@@ -44,7 +44,7 @@ public class CheckService {
         return checkRepository.findAll(pageable);
     }
 
-    public List<Check> getAllChecks() {
+    List<Check> getAllChecks() {
 
         return checkRepository.findAll();
     }

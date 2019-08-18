@@ -4,7 +4,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import springBoot.dto.ProductDTO;
 import springBoot.entity.Product;
-import springBoot.entity.enums.ProductType;
 import springBoot.repository.ProductRepository;
 
 import java.math.BigDecimal;
